@@ -54,7 +54,13 @@ The following command is an example:
 
 (ii) An example output is shown below (resolution=50kb):
 
-
+    Left position	Right position	Level
+    17600000	18050000	2
+    17600000	18250000	1
+    17600000	18350000	0
+    17700000	18050000	3
+    17700000	18250000	2
+    17700000	18350000	1
 
 **Changelog**
 
