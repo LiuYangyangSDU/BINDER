@@ -62,6 +62,8 @@ The following command is an example:
     17700000	18250000	2
     17700000	18350000	1
 
+The first and second columns indicate the left and right positions (bases) of TAD, and the third column indicates the hierarchy of TAD.
+
 **Changelog**
 
 The current version of BINDER is 1.0, subsequnt version will be updated.
