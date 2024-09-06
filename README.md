@@ -1,6 +1,6 @@
 # BINDER
 
-Here, we present BINDER for effectively and robustly identify hierarchical TADs from Hi-C data. Based on the hypothesis that anchoring of TAD boundaries is a key feature of hierarchical TADs, BINDER comprehensively characterizes TAD boundaries and robustly yields reliable hierarchical TADs exclusively using Hi-C contact matrix.
+Here, we present BINDER for accurately and robustly identifying hierarchical TADs from Hi-C data. Based on the hypothesis that the anchoring of TAD boundaries is a key feature of TADs, BINDER comprehensively generates consensus TAD boundaries and yields hierarchical TADs.
 
 The workflow of BINDER is as follows.
 
@@ -30,13 +30,15 @@ The workflow of BINDER is as follows.
 
 ## Usage of BINDER
 		
-    python BINDER.py [options] -m <hic_file> -r <resolution>
+    python BINDER.py [options] -m <hic_file> -r <resolution> -chr <chromosome>
 
 **Required**
 
     --matrix/-m <string>          : Path to N x N raw Hi-C matrix;
 
     --resolution/-r <int>         : resolution of Hi-C matrix (kb);
+
+    --chromosome/-chr <string>    : chromosome of Hi-C matrix;
 
 **Optional**
 
@@ -46,7 +48,7 @@ The workflow of BINDER is as follows.
 
 The following command is an example:
 
-    python BINDER.py -m example_data/GM12878_50kb_chr22.txt -r 50
+    python BINDER.py -m example_data/GM12878_50kb_chr22.txt -r 50 -chr chr22
 
 **Output**
 
@@ -54,15 +56,12 @@ The following command is an example:
 
 (ii) An example output is shown below (resolution=50kb):
 
-    Left position	Right position	Level
-    17600000	18050000	2
-    17600000	18250000	1
-    17600000	18350000	0
-    17700000	18050000	3
-    17700000	18250000	2
-    17700000	18350000	1
+    Left_position	Right_position	Level	Type
+    17600000	18050000	2	Domain
+    17600000	18250000	1	Domain
+    17600000	18350000	0	Domain
 
-The first and second columns indicate the left and right positions (bases) of TAD, and the third column indicates the hierarchy of TAD.
+The first and second columns indicate the left and right positions (bases) of TAD, the third column indicates the hierarchy of TAD (level of gaps is “non-level”.), and the fourth column indicates whether the base pair interval is domain or gap.
 
 **Changelog**
 
