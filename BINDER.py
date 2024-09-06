@@ -332,10 +332,16 @@ def getSubMatrix(mat, left_bin, right_bin):
             row_temp.append(mat[i][j])
         matrix.append(row_temp)
     matrix = np.array(matrix)
-    with open(args.output + "sub_matrix/" + str(left_bin) + "_" + str(right_bin) + ".txt", 'w') as f:
-        for i in range(matrix.shape[0]):
-            for j in range(i+1, matrix.shape[1]):
-                f.write(str(i+left_bin) + '\t' + str(j+left_bin) + '\t' + str(matrix[i][j]) + '\n')
+    if matrix.shape[0] >= 3:
+        if np.sum(np.where(np.diagonal(matrix), 0, 1)) == 0:
+            with open(args.output + "sub_matrix/" + str(left_bin) + "_" + str(right_bin) + ".txt", 'w') as f:
+                for i in range(matrix.shape[0]):
+                    for j in range(i + 1, matrix.shape[1]):
+                        f.write(str(i + left_bin) + '\t' + str(j + left_bin) + '\t' + str(matrix[i][j]) + '\n')
+            return 1
+        return 0
+    else:
+        return 0
 
 
 def read_Infomap_module_num(file):
@@ -376,7 +382,6 @@ def getFilteredDualBounds(filtered_dual_bounds, bound_with_pv):
         for j in range(i + 1, len(dual_bounds_temp)):
             set1 = set(dual_bounds_temp[i])
             set2 = set(dual_bounds_temp[j])
-            # 交叠边界记为1，2，3
             if set1.intersection(set2):
                 iterBoundsList = sorted(list(set(iterBoundsList).union(set1.union(set2))))
     consecutive_sequences = extract_consecutive_numbers(iterBoundsList)
@@ -533,13 +538,16 @@ def generate_TAD():
         candidate_bounds = sorted(candidate_bounds, reverse=True)
         if len(candidate_bounds):
             for candidate in candidate_bounds:
-                getSubMatrix(matrix, candidate, anchor)
-                subprocess.call(
-                    [sys.path[0] +"/Infomap",
-                     args.output + "sub_matrix/" + str(candidate) + "_" + str(anchor) + ".txt",
-                     args.output + "sub_matrix", "-N", "20", "--silent"])
-                if read_Infomap_module_num(args.output + "sub_matrix/" + str(candidate) + "_" + str(anchor) + ".tree") == 1:
-                    TAD.append([candidate, anchor])
+                flag = getSubMatrix(matrix, candidate, anchor)
+                if flag == 1:
+                    subprocess.call(
+                        [sys.path[0] + "/Infomap",
+                         args.output + "sub_matrix/" + str(candidate) + "_" + str(anchor) + ".txt",
+                         args.output + "sub_matrix", "-N", "20", "--silent"])
+                    if read_Infomap_module_num(args.output + "sub_matrix/" + str(candidate) + "_" + str(anchor) + ".tree") == 1:
+                        TAD.append([candidate, anchor])
+                    else:
+                        break
                 else:
                     break
     return TAD
@@ -565,6 +573,24 @@ def get_TAD_level(TAD):
                 flag = False
         dict_tad_level_chr[(TAD[i][0], TAD[i][1])] = len(multi_level_i) - 1
     return dict_tad_level_chr
+
+
+def find_gaps(tad_level, start, end):
+    tads_0 = sorted([tad for tad in tad_level.keys() if tad_level[tad] == 0], key=lambda x: x[0])
+    gaps = []
+    for tad in tads_0:
+        if start < tad[0]:
+            gaps.append([start, tad[0]])
+            start = tad[1]
+        else:
+            start = tad[1]
+    if start < end:
+        gaps.append([start, end])
+    for gap in gaps:
+        tad_level[(gap[0], gap[1])] = -1
+    tads = sorted([(tad[0], tad[1]) for tad in list(tad_level.keys()) + gaps], key=lambda x: x[0])
+    tads = sorted([x for x in set(tuple(x) for x in tads)], key=lambda x: x[0])
+    return tad_level, tads
 
 
 def logo():
@@ -609,6 +635,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--matrix', '-m', help='Hi-C contact matrix (N x N)', type=str)
     parser.add_argument('--resolution', '-r', help='resolution of Hi-C matrix (kb)', type=int)
+    parser.add_argument('--chromosome', '-chr', help='chromosome of Hi-C matrix', type=str)
     parser.add_argument('--output', '-o', help='path_to_output', default=sys.path[0]+'/BINDER_result/', type=str)
     args = parser.parse_args()
 
@@ -627,7 +654,7 @@ if __name__ == '__main__':
     print("*                                               *")
     print("*                                               *")
 
-    matrix = function.SCN(matrix)
+    # matrix = function.SCN(matrix)
 
     print("*               Normalization done              *")
     print("*                                               *")
@@ -690,11 +717,17 @@ if __name__ == '__main__':
     TAD_base = []
     for tad in TAD:
         TAD_base.append([(tad[0] - 1) * args.resolution * 1000, tad[1] * args.resolution * 1000])
-    tad_level = get_TAD_level(TAD_base)
-    with open(args.output + '/Result.txt', 'w') as file:
-        file.write("Left position" + '\t' + "Right position" + '\t' + "Level" + '\n')
-        for tad in tad_level.keys():
-            file.write(str(tad[0]) + '\t' + str(tad[1]) + '\t' + str(tad_level[tad]) + '\n')
+    tad_level, TAD = find_gaps(get_TAD_level(TAD_base), 0, matrix.shape[0] * args.resolution * 1000)
+
+    with open(args.output + 'Result.' + args.chromosome, 'w') as file:
+        file.write("Left_position" + '\t' + "Right_position" + '\t' + "Level" + '\t' + 'Type' + '\n')
+        for tad in TAD:
+            level = tad_level[tad]
+            if level != -1:
+                file.write(str(tad[0]) + '\t' + str(tad[1]) + '\t' + str(tad_level[tad]) + '\t' + 'domain' + '\n')
+            else:
+                file.write(str(tad[0]) + '\t' + str(tad[1]) + '\t' + 'non-level' + '\t' + 'gap' + '\n')
+
 
     print("* ============================================= *")
     print("*                                               *")

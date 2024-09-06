@@ -1,4 +1,3 @@
-import re
 import numpy as np
 from numpy import errstate, true_divide, isfinite, isscalar
 
@@ -34,7 +33,7 @@ def transform_matrix(two_dim, filter_p=0.5):
     return tri_list
 
 
-def read_Infomap_result(file, window_step):
+def read_Infomap_result(file, window_step, min_bin_len=3):
     with open(file, 'r') as f:
         bounds_module = []
         for line in f.readlines():
@@ -48,6 +47,7 @@ def read_Infomap_result(file, window_step):
     for i in range(module_num):
         bounds_module[i] = sorted(bounds_module[i])
     bounds_module = sorted(bounds_module)
+
     modules_new = []
     for module in bounds_module:
         diff = np.array(module[1:]) - np.array(module[:-1])
@@ -57,28 +57,34 @@ def read_Infomap_result(file, window_step):
         elif len(non_one_indices) == 1:
             module_left = module[:non_one_indices[0] + 1]
             module_right = module[non_one_indices[0] + 1:]
-            modules_new.append(module_left)
-            modules_new.append(module_right)
+            if len(module_left) >= min_bin_len:
+                modules_new.append(module_left)
+            if len(module_right) >= min_bin_len:
+                modules_new.append(module_right)
         else:
             for i in range(len(non_one_indices)):
                 if i == 0:
                     module_left = module[:non_one_indices[i] + 1]
                     module_right = module[non_one_indices[i] + 1:non_one_indices[i + 1]]
-                    if module_left:
+                    if len(module_left) >= min_bin_len:
                         modules_new.append(module_left)
-                    if module_right:
+                    if len(module_right) >= min_bin_len:
                         modules_new.append(module_right)
                 elif 0 < i < len(non_one_indices) - 1:
-                    modules_new.append(module[non_one_indices[i] + 1:non_one_indices[i + 1] + 1])
+                    module_middle = module[non_one_indices[i] + 1:non_one_indices[i + 1] + 1]
+                    if len(module_middle) >= min_bin_len:
+                        modules_new.append(module_middle)
                 else:
-                    modules_new.append(module[non_one_indices[i] + 1:])
+                    module_end = module[non_one_indices[i] + 1:]
+                    if len(module_end) >= min_bin_len:
+                        modules_new.append(module_end)
     bounds_module_new = []
     for module in modules_new:
-        if len(module) == 0 or len(module) == 1:
-            continue
-        else:
-            if len(module) / (module[-1] - module[0] + 1) > 3 / 4:
+        if len(module) >= min_bin_len:
+            continuity_rate = len(module) / (module[-1] - module[0] + 1)
+            if continuity_rate > 0.75:
                 bounds_module_new.append(module)
+
     if bounds_module_new:
         bounds = [(bounds_module_new[0][0] - 1, bounds_module_new[0][0]),
                   (bounds_module_new[-1][-1], bounds_module_new[-1][-1] + 1)]
@@ -96,9 +102,11 @@ def read_Infomap_result(file, window_step):
                 bounds.append((right - 1, right))
         bounds = sorted(bounds, key=lambda x: x[0])
         return bounds
+    else:
+        return []
 
 
-def read_Infomap_result_start(file, window_step):
+def read_Infomap_result_start(file, window_step, min_bin_len=3):
     with open(file, 'r') as f:
         bounds_module = []
         for line in f.readlines():
@@ -121,29 +129,34 @@ def read_Infomap_result_start(file, window_step):
         elif len(non_one_indices) == 1:
             module_left = module[:non_one_indices[0] + 1]
             module_right = module[non_one_indices[0] + 1:]
-            modules_new.append(module_left)
-            modules_new.append(module_right)
+            if len(module_left) >= min_bin_len:
+                modules_new.append(module_left)
+            if len(module_right) >= min_bin_len:
+                modules_new.append(module_right)
         else:
             for i in range(len(non_one_indices)):
                 if i == 0:
                     module_left = module[:non_one_indices[i] + 1]
                     module_right = module[non_one_indices[i] + 1:non_one_indices[i + 1]]
-                    if module_left:
+                    if len(module_left) >= min_bin_len:
                         modules_new.append(module_left)
-                    if module_right:
+                    if len(module_right) >= min_bin_len:
                         modules_new.append(module_right)
                 elif 0 < i < len(non_one_indices) - 1:
-                    modules_new.append(module[non_one_indices[i] + 1:non_one_indices[i + 1] + 1])
+                    module_middle = module[non_one_indices[i] + 1:non_one_indices[i + 1] + 1]
+                    if len(module_middle) >= min_bin_len:
+                        modules_new.append(module_middle)
                 else:
-                    modules_new.append(module[non_one_indices[i] + 1:])
+                    module_end = module[non_one_indices[i] + 1:]
+                    if len(module_end) >= min_bin_len:
+                        modules_new.append(module_end)
     bounds_module_new = []
     for module in modules_new:
-        if len(module) == 0 or len(module) == 1:
-            continue
-        else:
-            if len(module) / (module[-1] - module[0] + 1) > 3 / 4:
+        if len(module) >= min_bin_len:
+            continuity_rate = len(module) / (module[-1] - module[0] + 1)
+            if continuity_rate > 0.75:
                 bounds_module_new.append(module)
-    if len(bounds_module_new) != 0:
+    if bounds_module_new:
         bounds = [(bounds_module_new[0][0] - 1, bounds_module_new[0][0]),
                   (bounds_module_new[-1][-1], bounds_module_new[-1][-1] + 1)]
         for i in range(len(bounds_module_new) - 1):
@@ -161,10 +174,13 @@ def read_Infomap_result_start(file, window_step):
         bounds = sorted(bounds, key=lambda x: x[0])
         return bounds_module_new[0][0], bounds
     else:
-        return modules_new[0][0], []
+        if modules_new:
+            return modules_new[0][0], []
+        else:
+            return bounds_module[0][0], []
 
 
-def read_Infomap_result_end(file, window_step):
+def read_Infomap_result_end(file, window_step, min_bin_len=3):
     with open(file, 'r') as f:
         bounds_module = []
         for line in f.readlines():
@@ -187,27 +203,32 @@ def read_Infomap_result_end(file, window_step):
         elif len(non_one_indices) == 1:
             module_left = module[:non_one_indices[0] + 1]
             module_right = module[non_one_indices[0] + 1:]
-            modules_new.append(module_left)
-            modules_new.append(module_right)
+            if len(module_left) >= min_bin_len:
+                modules_new.append(module_left)
+            if len(module_right) >= min_bin_len:
+                modules_new.append(module_right)
         else:
             for i in range(len(non_one_indices)):
                 if i == 0:
                     module_left = module[:non_one_indices[i] + 1]
                     module_right = module[non_one_indices[i] + 1:non_one_indices[i + 1]]
-                    if module_left:
+                    if len(module_left) >= min_bin_len:
                         modules_new.append(module_left)
-                    if module_right:
+                    if len(module_right) >= min_bin_len:
                         modules_new.append(module_right)
                 elif 0 < i < len(non_one_indices) - 1:
-                    modules_new.append(module[non_one_indices[i] + 1:non_one_indices[i + 1] + 1])
+                    module_middle = module[non_one_indices[i] + 1:non_one_indices[i + 1] + 1]
+                    if len(module_middle) >= min_bin_len:
+                        modules_new.append(module_middle)
                 else:
-                    modules_new.append(module[non_one_indices[i] + 1:])
+                    module_end = module[non_one_indices[i] + 1:]
+                    if len(module_end) >= min_bin_len:
+                        modules_new.append(module_end)
     bounds_module_new = []
     for module in modules_new:
-        if len(module) == 0 or len(module) == 1:
-            continue
-        else:
-            if len(module) / (module[-1] - module[0] + 1) > 3 / 4:
+        if len(module) >= min_bin_len:
+            continuity_rate = len(module) / (module[-1] - module[0] + 1)
+            if continuity_rate > 0.75:
                 bounds_module_new.append(module)
     if bounds_module_new:
         bounds = [(bounds_module_new[0][0] - 1, bounds_module_new[0][0]),
@@ -226,6 +247,11 @@ def read_Infomap_result_end(file, window_step):
                 bounds.append((right - 1, right))
         bounds = sorted(bounds, key=lambda x: x[0])
         return bounds_module_new[-1][-1], bounds
+    else:
+        if modules_new:
+            return modules_new[-1][-1], []
+        else:
+            return bounds_module[-1][-1], []
 
 
 def merge_TAD(bounds_dict, bounds_right):
