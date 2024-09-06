@@ -54,14 +54,14 @@ The following command is an example:
 
 (i) The result is saved in BINDER_result/Result.txt by default.
 
-(ii) An example output is shown below (resolution=50kb):
+(ii) An example output is shown below (resolution=50kb, chr=chr22):
 
     Left_position	Right_position	Level	Type
     17600000	18050000	2	Domain
     17600000	18250000	1	Domain
     17600000	18350000	0	Domain
 
-The first and second columns indicate the left and right positions (bases) of TAD, the third column indicates the hierarchy of TAD (level of gaps is “non-level”.), and the fourth column indicates whether the base pair interval is domain or gap.
+The first and second columns indicate the left and right positions (bases) of TAD, the third column indicates the hierarchy of TAD (level of gaps is "non-level"), and the fourth column indicates whether the base pair interval is domain or gap.
 
 **Changelog**
 
