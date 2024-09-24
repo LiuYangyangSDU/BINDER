@@ -70,7 +70,10 @@ The first and second columns indicate the left and right positions (bases) of TA
 The current version of BINDER is 1.0, subsequnt version will be updated.
 
 ## References
+
 **1.** SCN/sqrtVC: Zhang, S., Krieger, J. M., Zhang, Y., Kaya, C., Kaynak, B., Mikulska-Ruminska, K., Doruker, P., Li, H., & Bahar, I. (2021). ProDy 2.0: increased scale and scope after 10 years of protein dynamics modelling with Python. Bioinformatics (Oxford, England), 37(20), 3657–3659. https://doi.org/10.1093/bioinformatics/btab187
+
 **2.** ICE: Servant, N., Varoquaux, N., Lajoie, B. R., Viara, E., Chen, C. J., Vert, J. P., Heard, E., Dekker, J., & Barillot, E. (2015). HiC-Pro: an optimized and flexible pipeline for Hi-C data processing. Genome biology, 16, 259. https://doi.org/10.1186/s13059-015-0831-x
+
 **3.** KR：Kumar, R., Sobhy, H., Stenberg, P., & Lizana, L. (2017). Genome contact map explorer: a platform for the comparison, interactive visualization and analysis of genome contact maps. Nucleic acids research, 45(17), e152. https://doi.org/10.1093/nar/gkx644
 
