@@ -12,6 +12,8 @@ import shutil
 import warnings
 np.seterr(divide='ignore', invalid='ignore')
 warnings.filterwarnings("ignore", message="loadtxt: input contained no data")
+np.warnings.filterwarnings('ignore', category=np.VisibleDeprecationWarning)
+
 
 
 class BoundaryDataSet(Dataset):
@@ -636,6 +638,7 @@ if __name__ == '__main__':
     parser.add_argument('--matrix', '-m', help='Hi-C contact matrix (N x N)', type=str)
     parser.add_argument('--resolution', '-r', help='resolution of Hi-C matrix (kb)', type=int)
     parser.add_argument('--chromosome', '-chr', help='chromosome of Hi-C matrix', type=str)
+    parser.add_argument('--normalization', '-n', help='normalization method', default='SCN', type=str)
     parser.add_argument('--output', '-o', help='path_to_output', default=sys.path[0]+'/BINDER_result/', type=str)
     args = parser.parse_args()
 
@@ -654,7 +657,21 @@ if __name__ == '__main__':
     print("*                                               *")
     print("*                                               *")
 
-    # matrix = function.SCN(matrix)
+    if args.normalization == 'SCN':
+        matrix = function.SCN(matrix)
+        model = torch.load(sys.path[0] + "/model/model_SCN.pkl").to(device)
+
+    if args.normalization == 'KR':
+        matrix, _, _ = function.KR(matrix)
+        model = torch.load(sys.path[0] + "/model/model_KR.pkl").to(device)
+
+    if args.normalization == 'ICE':
+        matrix = function.ICE(matrix)
+        model = torch.load(sys.path[0] + "/model/model_ICE.pkl").to(device)
+
+    if args.normalization == 'sqrtVC':
+        matrix = function.SQRTVCnorm(matrix)
+        model = torch.load(sys.path[0] + "/model/model_sqrtVC.pkl").to(device)
 
     print("*               Normalization done              *")
     print("*                                               *")
@@ -683,7 +700,7 @@ if __name__ == '__main__':
 
     remove_folder(args.output + 'test_feature')
 
-    model = torch.load(sys.path[0] + "/model.pkl").to(device)
+    # model = torch.load(sys.path[0] + "/model.pkl").to(device)
     criterion = nn.BCELoss()
     optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate)
 
