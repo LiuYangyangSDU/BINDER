@@ -4,6 +4,8 @@ Here, we present BINDER for accurately and robustly identifying hierarchical TAD
 
 The workflow of BINDER is as follows.
 
+! [Workflow of BINDER] (./images/Fig. 1.tif)
+
 ## Requirements for installation
 
 **1.** Python 3.10.2
