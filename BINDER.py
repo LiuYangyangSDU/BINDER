@@ -640,9 +640,17 @@ if __name__ == '__main__':
     parser.add_argument('--output', '-o', help='path_to_output', default=sys.path[0]+'/BINDER_result/', type=str)
     args = parser.parse_args()
 
-    if not args.matrix or not args.resolution:
+    if not args.matrix:
         parser.print_help()
-        sys.exit("Error: You must provide both 'matrix' and 'resolution' arguments.")
+        sys.exit("Error: You must provide input matrix.")
+
+    if not args.resolution:
+        parser.print_help()
+        sys.exit("Error: You must provide resolution (50 for 50kb for example).")
+
+    if not args.resolution:
+        parser.print_help()
+        sys.exit("Error: You must provide chromosome (22 for chr22 for example).")
 
     logo()
     delimiter()
