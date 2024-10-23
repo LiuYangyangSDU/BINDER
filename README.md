@@ -2,6 +2,13 @@
 
 Here, we present BINDER for accurately and robustly identifying hierarchical TADs from Hi-C data. Based on the hypothesis that the anchoring of TAD boundaries is a key feature of TADs, BINDER comprehensively generates consensus TAD boundaries and yields hierarchical TADs.
 
+<<<<<<< HEAD
+=======
+The workflow of BINDER is as follows.
+
+![Workflow of BINDER](./images/workflow_of_BINDER.png)
+
+>>>>>>> dcada345ec5f45f6abb2a4ed5a5276592192c353
 ## Requirements for installation
 
 **1.** Python 3.10.2

@@ -651,6 +651,10 @@ if __name__ == '__main__':
 
     matrix = np.loadtxt(args.matrix)
 
+    if matrix.shape[0] != matrix.shape[1]:
+        parser.print_help()
+        sys.exit("Error: Input matrix should be N x N.")
+
     print("*               Normalizing matrix              *")
     print("*                                               *")
     print("*                                               *")
