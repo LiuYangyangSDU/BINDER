@@ -2,10 +2,6 @@
 
 Here, we present BINDER for accurately and robustly identifying hierarchical TADs from Hi-C data. Based on the hypothesis that the anchoring of TAD boundaries is a key feature of TADs, BINDER comprehensively generates consensus TAD boundaries and yields hierarchical TADs.
 
-The workflow of BINDER is as follows.
-
-![Workflow of BINDER](./images/workflow.png)
-
 ## Requirements for installation
 
 **1.** Python 3.10.2
@@ -31,17 +27,17 @@ The workflow of BINDER is as follows.
 `$ chmod +x Infomap`
 
 ## Usage of BINDER
-		
+
     python BINDER.py [options] -m <hic_file> -r <resolution> -chr <chromosome>
 
 **Required**
 
     --matrix/-m <string>          : Path to N x N raw Hi-C matrix;
-
+    
     --resolution/-r <int>         : resolution of Hi-C matrix (kb);
-
+    
     --chromosome/-chr <string>    : chromosome of Hi-C matrix;
-
+    
     --normalization/-n <string>   : normalization method: 'SCN' [1], 'ICE' [2], 'KR' [3], 'sqrtVC' [1], default='SCN';
 
 **Optional**

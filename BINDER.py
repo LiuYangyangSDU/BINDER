@@ -369,8 +369,6 @@ def extract_consecutive_numbers(lst):
             if len(sequence) >= 3:
                 consecutive_sequences.append(sequence)
             sequence = [num]
-
-    # 检查最后一个序列
     if len(sequence) >= 3:
         consecutive_sequences.append(sequence)
 
