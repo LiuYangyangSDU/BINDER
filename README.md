@@ -4,7 +4,7 @@ Here, we present BINDER for accurately and robustly identifying hierarchical TAD
 
 The workflow of BINDER is as follows.
 
-![Workflow of BINDER](./images/workflow.png)
+![Workflow of BINDER](./images/workflow_of_BINDER.png)
 
 ## Requirements for installation
 
