@@ -32,7 +32,7 @@ The workflow of BINDER is as follows.
 
 ## Usage of BINDER
 
-    python BINDER.py [options] -m <hic_file> -r <resolution> -chr <chromosome> -n <normalization>
+    python BINDER.py [options] -m <hic_file> -r <resolution> -chr <chromosome>
 
 **Required**
 
