@@ -15,7 +15,6 @@ warnings.filterwarnings("ignore", message="loadtxt: input contained no data")
 np.warnings.filterwarnings('ignore', category=np.VisibleDeprecationWarning)
 
 
-
 class BoundaryDataSet(Dataset):
     def __init__(self, file_name):
         try:
@@ -642,15 +641,15 @@ if __name__ == '__main__':
 
     if not args.matrix:
         parser.print_help()
-        sys.exit("Error: You must provide input matrix.")
+        sys.exit("Error: You must provide a N x N matrix as input.")
 
     if not args.resolution:
         parser.print_help()
-        sys.exit("Error: You must provide resolution (50 for 50kb for example).")
+        sys.exit("Error: You must provide parameter '-r' ('-r 50' for 50kb resolution for example).")
 
-    if not args.resolution:
+    if not args.chromosome:
         parser.print_help()
-        sys.exit("Error: You must provide chromosome (22 for chr22 for example).")
+        sys.exit("Error: You must provide parameter '-chr' ('-chr 22' for chr22 for example).")
 
     logo()
     delimiter()
@@ -746,12 +745,12 @@ if __name__ == '__main__':
         TAD_base.append([(tad[0] - 1) * args.resolution * 1000, tad[1] * args.resolution * 1000])
     tad_level, TAD = find_gaps(get_TAD_level(TAD_base), 0, matrix.shape[0] * args.resolution * 1000)
 
-    with open(args.output + 'Result.' + args.chromosome, 'w') as file:
+    with open(args.output + 'Result.chr' + args.chromosome, 'w') as file:
         file.write("Left_position" + '\t' + "Right_position" + '\t' + "Level" + '\t' + 'Type' + '\n')
         for tad in TAD:
             level = tad_level[tad]
             if level != -1:
-                file.write(str(tad[0]) + '\t' + str(tad[1]) + '\t' + str(tad_level[tad]) + '\t' + 'domain' + '\n')
+                file.write(str(tad[0]) + '\t' + str(tad[1]) + '\t' + str(tad_level[tad] + 1) + '\t' + 'domain' + '\n')
             else:
                 file.write(str(tad[0]) + '\t' + str(tad[1]) + '\t' + 'non-level' + '\t' + 'gap' + '\n')
 
