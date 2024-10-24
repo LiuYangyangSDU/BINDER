@@ -32,7 +32,7 @@ The workflow of BINDER is as follows.
 
 ## Usage of BINDER
 
-    python BINDER.py [options] -m <hic_file> -r <resolution> -chr <chromosome>
+    python BINDER.py [options] -m <Hi-C matrix> -r <resolution> -chr <chromosome>
 
 **Required**
 
@@ -41,31 +41,31 @@ The workflow of BINDER is as follows.
     --resolution/-r <int>         : resolution of Hi-C matrix (kb);
     
     --chromosome/-chr <string>    : chromosome of Hi-C matrix;
-    
-    --normalization/-n <string>   : normalization method: 'SCN' [1], 'ICE' [2], 'KR' [3], 'sqrtVC' [1], default='SCN';
 
 **Optional**
 
     --output/-o <string>          : Output folder, the output result is saved in the BINDER_result folder by default;
 
+    --normalization/-n <string>   : normalization method: 'SCN' [1], 'ICE' [2], 'KR' [3], 'sqrtVC' [1], default='SCN';
+
 **Typical commands**
 
 The following command is an example:
 
-    python BINDER.py -m example_data/GM12878_50kb_chr22.txt -r 50 -chr chr22 -n SCN
+    python BINDER.py -m example_data/GM12878_50kb_chr22.txt -r 50 -chr 22
 
 **Output**
 
-(i) The result is saved in BINDER_result/Result.txt by default.
+(i) The result is saved in BINDER_result/Result.chr* by default.
 
-(ii) An example output is shown below (resolution=50kb, chr=chr22):
+(ii) An example output is shown below:
 
     Left_position	Right_position	Level	Type
-    17600000	18050000	2	Domain
-    17600000	18250000	1	Domain
-    17600000	18350000	0	Domain
+    17600000	18050000	3	domain
+    17600000	18250000	2	domain
+    17600000	18350000	1	domain
 
-The first and second columns indicate the left and right positions (bases) of TAD, the third column indicates the hierarchy of TAD (level of gaps is "non-level"), and the fourth column indicates whether the base pair interval is domain or gap.
+The first and second columns indicate the left and right positions (bp) of TAD, the third column indicates the hierarchy of TAD (level of gaps is "non-level"), and the fourth column indicates whether the base pair interval is domain or gap.
 
 **Changelog**
 
